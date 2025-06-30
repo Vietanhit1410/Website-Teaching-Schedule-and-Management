@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Giáo Viên</title>
+    <style>
+        /* Reset mặc định */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100%; /* Đảm bảo body và html chiếm toàn bộ chiều cao */
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2f3b52, #4b4f63);
+            color: white;
+            display: flex;
+            flex-direction: row; /* Đảm bảo các phần tử trong body sắp xếp theo chiều ngang */
+            margin: 0;
+        }
+
+        /* Thanh tab bên trái */
+        .sidebar {
+            width: 300px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Tiêu đề sidebar */
+        .sidebar h2 {
+            color: #ff6a00;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Các mục trong sidebar */
+        .sidebar-item {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-size: 15px;
+        }
+
+        .sidebar-item:hover {
+            background-color: #ff6a00;
+            transform: scale(1.05);
+        }
+
+        /* Khu vực nội dung chính */
+        .main-content {
+            flex-grow: 1; /* Phần này sẽ chiếm toàn bộ không gian còn lại */
+            height: 100vh; /* Đảm bảo chiều cao 100% */
+            width: 100vh;
+            /*padding: 20px;*/
+            overflow-y: auto; /* Cho phép cuộn nếu nội dung dài */
+            animation: fadeIn 1s ease-out;
+            display: none; /* Ẩn nội dung mặc định */
+            overflow: hidden; /* Không cuộn trong .main-content */
+        }
+
+        .main-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            overflow: auto; /* Cho phép cuộn trong iframe */
+        }
+        .main-content.active {
+            display: block; /* Hiển thị nội dung khi được chọn */
+        }
+
+        .main-content h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .main-content p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .main-content iframe {
+            width: 100%;
+            height: 100vh;
+            border: none;
+            overflow: auto; /* Cho phép cuộn nếu cần */
+        }
+
+
+
+        /* Hiệu ứng fade-in */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2 id="Title"></h2>
+    <div class="sidebar-item" onclick="showContent('home')">Trang Chủ </div>
+    <div class="sidebar-item" onclick="showContent('profile')">Thông Tin Cá Nhân</div>
+    <div class="sidebar-item" onclick="showContent('schedule')">Lịch Dạy</div>
+    <div class="sidebar-item" onclick="showContent('ratings')">Đánh Giá</div>
+    <div class="sidebar-item" onclick="showContent('notifications')">Thông Báo</div>
+    <div class="sidebar-item" onclick="showContent('help')">Hỗ Trợ</div>
+    <div class="sidebar-item" onclick="logout()">Đăng Xuất</div>
+</div>
+
+<!-- Nội dung chính -->
+<div class="main-content" id="content-home">
+    <iframe src="TrangChuContent_User.html" style="width: 100%; height: 100%; border: none;"></iframe>
+</div>
+
+
+<div class="main-content" id="content-profile">
+    <iframe src="ThongTinGiaoVien.html" style="width: 100%; height: 100%; border: none;"></iframe>
+</div>
+
+<div class="main-content" id="content-schedule">
+    <iframe src="LichDay_User.html" style="width: 100%; height: 100%; border: none;"></iframe>
+</div>
+
+<div class="main-content" id="content-rating">
+    <iframe src="DanhGia_User.html" style="width: 100%; height: 100%; border: none;"></iframe>
+</div>
+
+<div class="main-content" id="content-notifications">
+    <iframe src="ThongBao_User.html" style="width: 100%; height: 100%; border: none;"></iframe>
+</div>
+
+<div class="main-content" id="content-help">
+    <h1>Help</h1>
+</div>
+
+<script>
+    // Nội dung của từng tab
+    function logout(){
+        localStorage.clear();
+        window.location.href ="DangNhap.html";
+    }
+
+    function getThongTinGiaoVien() {
+        // Giả lập việc lấy dữ liệu từ API
+        const data = JSON.parse(localStorage.getItem('giaoVien'));
+        // Gán dữ liệu vào các phần tử HTML
+        if(data){
+            document.getElementById("Title").textContent = "Chào mừng giáo viên "+data.tenGV;
+        }
+    }
+    const contentData = {
+        home: {
+            title: "Trang Chủ",
+            contentId: "content-home"
+        },
+        profile: {
+            title: "Thông Tin Giáo Viên",
+            contentId: "content-profile"
+        },
+        schedule: {
+            title: "Lịch Dạy",
+            contentId: "content-schedule"
+        },
+        ratings: {
+            title: "Đánh Giá",
+            contentId: "content-rating"
+        },
+        notifications: {
+            title: "Thông Báo",
+            contentId: "content-notifications"
+        },
+        help: {
+            title: "Hỗ Trợ",
+            contentId: "content-help"
+        }
+    };
+
+
+    function showContent(key) {
+        const contents = document.querySelectorAll('.main-content');
+        contents.forEach(content => content.classList.remove('active'));
+
+
+        const contentDiv = document.getElementById(contentData[key].contentId);
+        if (contentDiv) {
+            contentDiv.classList.add('active');
+        }
+    }
+    function getInfo() {
+        const apiUrl = '/apiThongTinGiaoVien/layGiaoVienTheoMaGV';
+        const data2 = JSON.parse(localStorage.getItem('taiKhoan'));
+        const maGV = data2.tenDangNhap;
+
+        if (!maGV) {
+            document.getElementById('error-message').textContent = "Vui lòng nhập tài khoản và mật khẩu!";
+            return;
+        }
+
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: maGV,
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Không tìm thấy thông tin giáo viên");
+                }
+
+            })
+            .then(data3 => {
+                if (data3) {
+                    try {
+                        localStorage.setItem('giaoVien',JSON.stringify(data3));
+                        getThongTinGiaoVien();
+                    } catch (error) {
+                        console.error("Lỗi khi lưu vào localStorage:", error);
+                    }
+                }else {
+                    console.error("Dữ liệu giáo viên không hợp lệ.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+    // Thay đổi chiều cao của iframe khi nội dung thay đổi
+
+
+    // Gọi hàm resize khi trang cha hoặc iframe đã tải
+
+
+    // Gọi hàm mỗi khi nội dung trong iframe thay đổi
+
+    getInfo();
+    showContent('home');
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo</title>
+    <style>
+        /* Reset mặc định */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Cấu trúc chính của trang */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2f3b52;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        /* Bảng báo cáo */
+        .report-table {
+            width: 90%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #1d2a3a; /* Màu nền của bảng */
+        }
+
+        .report-table th, .report-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .report-table th {
+            background-color: #ff6a00;
+            color: white;
+            font-size: 18px;
+        }
+
+        .report-table td {
+            font-size: 16px;
+            color: #ccc;
+        }
+
+        .report-table tr:hover {
+            background-color: #444;
+        }
+
+        /* Cải thiện phần hiển thị khi dữ liệu trống */
+        .no-data {
+            text-align: center;
+            font-size: 18px;
+            color: #ccc;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Báo Cáo</h1>
+
+<!-- Bảng báo cáo -->
+<table class="report-table" id="report-table">
+    <thead>
+    <tr>
+        <th>STT</th>
+        <th>Mã Báo Cáo</th>
+        <th>Mã Giáo Viên</th>
+        <th>Tháng</th>
+        <th>Năm</th>
+        <th>Ngày</th>
+        <th>Số Tiết Dạy</th>
+        <th>Số Tiết Nghỉ</th>
+        <th>Số Tiết Đi Muộn</th>
+        <th>Số Tiết Tan Sớm</th>
+        <th>Đánh Giá</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Dữ liệu báo cáo sẽ được thêm vào đây -->
+    </tbody>
+</table>
+
+<!-- Thông báo khi không có dữ liệu -->
+<div id="no-data" class="no-data" style="display:none;">
+    Không có báo cáo nào để hiển thị.
+</div>
+
+<script>
+    // Hàm gọi API để lấy báo cáo
+    function fetchReport() {
+        const maGV = JSON.parse(localStorage.getItem('giaoVien')).maGV;
+        if(!maGV) alert("maGVnull")
+        fetch('apiBaoCaoTong/baoCaoTongTheoNgayUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: maGV
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    displayReport(data);
+                } else {
+                    document.getElementById("no-data").style.display = "block";  // Nếu không có báo cáo
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi lấy dữ liệu:', error);
+                document.getElementById("no-data").style.display = "block";  // Hiển thị thông báo lỗi
+            });
+    }
+
+    // Hàm hiển thị báo cáo trên giao diện
+    function displayReport(report) {
+        const tableBody = document.getElementById("report-table").getElementsByTagName("tbody")[0];
+        const noDataMessage = document.getElementById("no-data");
+
+        tableBody.innerHTML = ""; // Xóa nội dung bảng trước
+        noDataMessage.style.display = "none";  // Ẩn thông báo không có dữ liệu
+
+        const row = tableBody.insertRow();
+        row.innerHTML = `
+            <td>1</td>
+            <td>${report.maBC}</td>
+            <td>${report.maGV}</td>
+            <td>${report.thang}</td>
+            <td>${report.nam}</td>
+            <td>${report.ngay}</td>
+            <td>${report.soTietDay}</td>
+            <td>${report.soTietNghi}</td>
+            <td>${report.soTietDiMuon}</td>
+            <td>${report.soTietTanSom}</td>
+            <td>${report.danhGia}</td>
+        `;
+    }
+
+    // Gọi hàm để hiển thị báo cáo cho giáo viên có mã "GV001"
+    fetchReport();
+
+</script>
+
+</body>
+</html>

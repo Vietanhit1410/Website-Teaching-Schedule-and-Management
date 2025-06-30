@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Thông Báo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        textarea {
+            height: 150px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #ff6a00;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #e55e00;
+        }
+
+        #all-button {
+            padding: 10px;
+            margin-left: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #all-button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Quản Lý Thông Báo</h1>
+    <form id="notification-form">
+        <div class="form-group">
+            <label for="id">ID:</label>
+            <input type="text" id="id" name="id" placeholder="ID tự động" disabled>
+        </div>
+        <div class="form-group">
+            <label for="maTB">Mã Thông Báo:</label>
+            <input type="text" id="maTB" name="maTB" placeholder="Mã TB" disabled>
+        </div>
+        <div class="form-group">
+            <label for="title">Tiêu đề thông báo:</label>
+            <input type="text" id="title" name="title" placeholder="Nhập tiêu đề thông báo" required>
+        </div>
+        <div class="form-group">
+            <label for="message">Nội dung thông báo:</label>
+            <textarea id="message" name="message" placeholder="Nhập nội dung thông báo..." required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="maGV">Chọn hoặc nhập mã giáo viên:</label>
+            <input type="text" id="maGV-input" name="maGV" placeholder="Nhập mã giáo viên hoặc chọn 'Tất cả'" style="width: 80%;">
+            <button type="button" id="all-button" onclick="selectAllTeachers()">Tất cả</button>
+        </div>
+        <div class="actions">
+            <button type="button" onclick="saveNotification()">Gửi Thông Báo</button>
+        </div>
+    </form>
+    <h2>Danh sách Thông Báo</h2>
+    <table id="notification-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Mã TB</th>
+            <th>Tiêu Đề</th>
+            <th>Nội Dung</th>
+            <th>Người Nhận</th>
+            <th>Thao Tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Thông báo sẽ được thêm tại đây -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    let notifications = []; // Danh sách thông báo
+    let editingNotification = null; // Thông báo đang chỉnh sửa (null nếu không chỉnh sửa)
+
+    // Hàm lưu thông báo (Thêm hoặc Sửa)
+    function saveNotification() {
+        const maGVInput = document.getElementById('maGV-input').value.trim();
+        const newNotification = {
+            id: document.getElementById('id').value,
+            maTB: document.getElementById('maTB').value,
+            title: document.getElementById('title').value,
+            content: document.getElementById('message').value,
+            maGV: maGVInput || 'ALL' // Nếu không nhập mã giáo viên, mặc định là ALL
+        };
+
+        if (editingNotification) {
+            newNotification.maTB = editingNotification.maTB;
+            newNotification.id = editingNotification.id;
+        }
+
+        fetch("/apiThongBao/createOrUpdate", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newNotification),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Có lỗi xảy ra khi lưu thông báo.");
+                }
+
+                if (response.status === 204) {
+                    return null;
+                }
+
+                return response.json();
+            })
+            .then(data => {
+                if (data) loadNotifications();
+                resetForm();
+            })
+            .catch(error => {
+                console.error("Error saving notification:", error);
+            });
+    }
+
+    // Hiển thị danh sách thông báo
+    function displayNotifications() {
+        const tableBody = document.querySelector('#notification-table tbody');
+        tableBody.innerHTML = '';
+        notifications.forEach(notification => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>${notification.id}</td>
+            <td>${notification.maTB}</td>
+            <td>${notification.title}</td>
+            <td>${notification.content}</td>
+            <td>${notification.maGV}</td>
+            <td>
+                <button onclick="editNotification('${notification.id}')">Sửa</button>
+                <button onclick="deleteNotification('${notification.id}')">Xóa</button>
+            </td>
+        `;
+            tableBody.appendChild(row);
+        });
+    }
+
+
+    // Hàm sửa thông báo
+    function editNotification(id) {
+        // Tìm thông báo cần sửa từ danh sách thông báo
+        console.log("ID được truyền vào:", id);
+        editingNotification = notifications.find(n => String(n.id) === String(id));
+        console.log(notifications);
+        console.log(editingNotification);
+        // Nếu tìm thấy thông báo thì điền thông tin vào form
+        if (editingNotification) {
+            document.getElementById('id').value = editingNotification.id;
+            document.getElementById('maTB').value = editingNotification.maTB;
+            document.getElementById('title').value = editingNotification.title;
+            document.getElementById('message').value = editingNotification.content;
+            document.getElementById('maGV-input').value = editingNotification.maGV;
+        } else {
+            console.error("Không tìm thấy thông báo với id: " + id);
+        }
+    }
+
+
+    // Hàm xóa thông báo
+    function deleteNotification(id) {
+        const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa thông báo này?");
+        if (isConfirmed) {
+            fetch("/apiThongBao/deleteByID", {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: id
+            })
+                .then(response => {
+                    if (response.ok) {
+                        notifications = notifications.filter(n => n.id !== id);
+                        displayNotifications();
+                    } else {
+                        alert("Có lỗi xảy ra khi xóa thông báo.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting notification:", error);
+                    alert("Có lỗi xảy ra khi xóa thông báo.");
+                });
+        }
+    }
+
+    // Hàm tải tất cả thông báo
+    function loadNotifications() {
+        fetch("/apiThongBao/getAll")
+            .then(response => response.json())
+            .then(data => {
+                notifications = data;
+                console.log("Dữ liệu thông báo tải lên:", notifications);
+                displayNotifications();
+            })
+            .catch(error => {
+                console.error("Error loading notifications:", error);
+            });
+    }
+
+    // Hàm reset form
+    function resetForm() {
+        document.getElementById('notification-form').reset();
+        document.getElementById('id').value = '';
+        document.getElementById('maTB').value = '';
+        editingNotification = null;
+    }
+
+    // Gọi hàm tải thông báo khi tải trang
+    window.onload = loadNotifications;
+
+    // Chọn tất cả giáo viên
+    function selectAllTeachers() {
+        document.getElementById('maGV-input').value = 'ALL';
+    }
+</script>
+</body>
+</html>

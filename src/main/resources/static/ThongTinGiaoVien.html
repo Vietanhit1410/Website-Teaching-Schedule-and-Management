@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Tin Giáo Viên</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2f3b52, #4b4f63); /* Nền gradient tương tự trang chủ */
+            color: white;
+        }
+
+        .container {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #ff6a00;
+        }
+
+        .info-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .info-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .info-container th,
+        .info-container td {
+            padding: 10px;
+            text-align: left;
+            border-style: none;
+        }
+
+        .info-container th {
+            /*background-color: #ff6a00;*/
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .info-container td {
+            color: #ddd;
+            font-size: 1rem;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Thông Tin Giáo Viên</h1>
+    <div class="info-container">
+
+        <table>
+            <tr>
+                <th>Mã Giáo Viên</th>
+                <td id="maGV"></td>
+            </tr>
+            <tr>
+                <th>Họ Tên</th>
+                <td id="hoTen"></td>
+            </tr>
+            <tr>
+                <th>Ngày Sinh</th>
+                <td id="ngaySinh"></td>
+            </tr>
+            <tr>
+                <th>Giới Tính</th>
+                <td id="gioiTinh"></td>
+            </tr>
+            <tr>
+                <th>Địa Chỉ</th>
+                <td id="diaChi"></td>
+            </tr>
+            <tr>
+                <th>Số Điện Thoại</th>
+                <td id="soDienThoai"></td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td id="email"></td>
+            </tr>
+            <tr>
+                <th>Chuyên Môn</th>
+                <td id="chuyenMon"></td>
+            </tr>
+            <tr>
+                <th>Bằng Cấp</th>
+                <td id="bangCap"></td>
+            </tr>
+            <tr>
+                <th>Kinh Nghiệm</th>
+                <td id="kinhNghiem"></td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+
+<script>
+
+    setTimeout(function() {
+        getThongTinGiaoVienHa();
+    }, 1000); // Chờ 500ms trước khi gọi lại hàm
+
+
+    function getThongTinGiaoVienHa() {
+        try {
+            const data = JSON.parse(localStorage.getItem('giaoVien'));
+
+            // If no data is found, we can return early
+            if (!data) {
+                console.log("No teacher data found in localStorage");
+                return;
+            }
+
+            // Populate the HTML elements with the data
+            document.getElementById("maGV").textContent = data.maGV || "N/A";
+            document.getElementById("hoTen").textContent = data.tenGV || "N/A";
+            document.getElementById("ngaySinh").textContent = data.ngaySinh || "N/A";
+            document.getElementById("gioiTinh").textContent = data.gioiTinh || "N/A";
+            document.getElementById("diaChi").textContent = data.diaChi || "N/A";
+            document.getElementById("soDienThoai").textContent = data.soDienThoai || "N/A";
+            document.getElementById("email").textContent = data.email || "N/A";
+            document.getElementById("chuyenMon").textContent = data.chuyenMon || "N/A";
+            document.getElementById("bangCap").textContent = data.bangCap || "N/A";
+            document.getElementById("kinhNghiem").textContent = data.kinhNghiem || "N/A";
+
+        } catch (e) {
+            console.error("An error occurred while fetching teacher data:", e);
+        }
+    }
+
+
+</script>
+
+</body>
+</html>

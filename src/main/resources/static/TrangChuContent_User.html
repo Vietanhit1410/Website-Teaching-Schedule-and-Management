@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2d3b5b, #4c6881); /* Màu gradient xanh và tím */
+            color: #fff;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 0;
+            overflow: hidden;
+            max-width: 100%; /* Đảm bảo nội dung không bị vượt quá chiều rộng */
+            width: 100%;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            max-width: 1200px; /* Giới hạn chiều rộng của container */
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+            /*background-color: rgba(255, 255, 255, 0.1);*/
+            border-radius: 12px;
+            /*box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);*/
+            overflow: hidden;
+        }
+
+        .headline {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            background-color: rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        .headline img {
+            width: 45%;
+            height: auto;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .headline .content {
+            flex: 1;
+            padding-left: 20px;
+        }
+
+        .headline h2 {
+            font-size: 28px;
+            color: #ff6a00;
+            margin-bottom: 10px;
+        }
+
+        .headline p {
+            color: #ddd;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .articles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .article {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            background-color: #2f3b52;
+            padding-top: 15px;
+        }
+
+        .article:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .article img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-bottom: 2px solid #ffb84d;
+        }
+
+        .article h3 {
+            font-size: 20px;
+            color: #ff6a00;
+            padding: 15px;
+            background-color: #2f3b52;
+        }
+
+        .article p {
+            font-size: 16px;
+            color: #ddd;
+            padding: 0 15px 20px;
+            background-color: #2f3b52;
+        }
+
+        /* Điều chỉnh để hiển thị tốt hơn trên thiết bị di động */
+        @media (max-width: 768px) {
+            .headline img {
+                width: 40%; /* Giảm kích thước ảnh trên các màn hình nhỏ */
+            }
+
+            .headline h2 {
+                font-size: 24px; /* Giảm kích thước tiêu đề */
+            }
+
+            .article h3 {
+                font-size: 18px;
+            }
+
+            .headline {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="headline">
+        <img src="https://cdn.thuvienphapluat.vn/uploads/tintuc/2023/06/15/dinh-muc-tiet-day-cua-giao-vien.jpeg" style="width: 400px;height: 300px" alt="Giới thiệu giáo viên">
+        <div class="content">
+            <h2>Giới thiệu về Giáo viên: Nguyễn Văn A</h2>
+            <p>Giáo viên Nguyễn Văn A là một chuyên gia trong lĩnh vực Toán học, với nhiều năm kinh nghiệm giảng dạy và nghiên cứu. Ông luôn cống hiến hết mình trong công tác giảng dạy và giúp đỡ học sinh đạt thành tích cao trong học tập.</p>
+        </div>
+    </div>
+
+    <div class="articles">
+        <div class="article">
+            <img src="https://img.lovepik.com/free-png/20211103/lovepik-businesswoman-white-collar-thumb-thumbs-up-picture-png-image_400244045_wh1200.png"
+                 style="height: 200px;width: 300px" alt="Bài viết 1">
+            <h3>Bài viết 1: Phương pháp học hiệu quả</h3>
+            <p>Chia sẻ về các phương pháp học tập hiệu quả giúp học sinh nâng cao khả năng tiếp thu kiến thức nhanh chóng và bền vững.</p>
+        </div>
+        <div class="article">
+            <img src="https://images.pexels.com/photos/716276/pexels-photo-716276.jpeg?cs=srgb&dl=pexels-zhuhehuai-716276.jpg&fm=jpg"
+                 style="height: 200px;width: 300px" alt="Bài viết 2">
+            <h3>Bài viết 2: Kinh nghiệm giảng dạy Toán</h3>
+            <p>Những kinh nghiệm quý báu từ việc giảng dạy môn Toán cho các thế hệ học sinh, giúp họ tự tin và thành công hơn trong học tập.</p>
+        </div>
+        <div class="article">
+            <img src="https://th.bing.com/th/id/R.abdb63b4b5c59fe07bc733256bfadcca?rik=3QWQN4RiAm5p2A&pid=ImgRaw&r=0"
+                 style="height: 200px;width: 300px" alt="Bài viết 3">
+            <h3>Bài viết 3: Tạo động lực học tập</h3>
+            <p>Làm thế nào để tạo ra động lực học tập mạnh mẽ cho học sinh, giúp họ vượt qua mọi khó khăn trong quá trình học tập.</p>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

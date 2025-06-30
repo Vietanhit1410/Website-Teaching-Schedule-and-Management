@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Báo Cáo Tổng</title>
+  <style>
+    /* Giữ nguyên các style từ trang phân công */
+    body {
+      font-family: Arial, sans-serif;
+      background: #2f3b52;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #ff6a00;
+    }
+
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .report-table th, .report-table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .report-table th {
+      background-color: #ff6a00;
+      color: white;
+    }
+
+    .report-table tr:hover {
+      background-color: rgba(241, 241, 241, 0.35);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .actions button {
+      padding: 10px 20px;
+      background-color: #ff6a00;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .actions button:hover {
+      background-color: #ee0979;
+    }
+
+    .form-container {
+      margin-top: 10px;
+      margin-bottom: 20px;
+      background-color: #2f3b52;
+      padding: 10px 30px;
+      border-radius: 8px;
+      border: 1px solid darkgrey;
+      display: none;
+      width: 50%;
+      max-width: 600px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      color: white;
+    }
+
+    .form-container h2 {
+      color: #ff6a00;
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-container label {
+      color: white;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-container .input-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-container input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ff6a00;
+      border-radius: 5px;
+      background-color: #3a4a64;
+      color: white;
+      font-size: 14px;
+    }
+
+    .form-container button {
+      background-color: #ff6a00;
+      color: white;
+      font-size: 16px;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 48%;
+      margin-top: 6px;
+    }
+
+    .form-container button:hover {
+      background-color: #ee0979;
+    }
+
+    .form-container .cancel-btn {
+      background-color: #555;
+    }
+
+    .form-container .save-btn {
+      background-color: #ff6a00;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Quản Lý Báo Cáo Tổng</h1>
+
+<!-- Bảng báo cáo tổng -->
+<table class="report-table" id="report-table">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Mã Giáo Viên</th>
+    <th>Tháng</th>
+    <th>Năm</th>
+    <th>Ngày</th>
+    <th>Số Tiết Dạy</th>
+    <th>Số Tiết Nghỉ</th>
+    <th>Số Tiết Đi Muộn</th>
+    <th>Số Tiết Tán Sớm</th>
+    <th>Đánh Giá</th>
+    <th>Hành Động</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!-- Dữ liệu báo cáo sẽ được thêm vào đây -->
+  </tbody>
+</table>
+
+<div class="form-container" id="add-report-form">
+  <h2>Thêm/Sửa Báo Cáo</h2>
+  <form id="add-form" onsubmit="saveEditedReport(event)">
+    <div class="input-row">
+      <div>
+        <label for="id">ID</label>
+        <input type="text" id="id" name="id" disabled required>
+      </div>
+      <div>
+        <label for="maGV">Mã Giáo Viên:</label>
+        <input type="text" id="maGV" name="maGV" required>
+      </div>
+      <div>
+        <label for="thang">Tháng:</label>
+        <input type="number" id="thang" name="thang" required>
+      </div>
+      <div>
+        <label for="nam">Năm:</label>
+        <input type="number" id="nam" name="nam" required>
+      </div>
+      <div>
+        <label for="ngay">Ngày:</label>
+        <input type="number" id="ngay" name="ngay" required>
+      </div>
+      <div>
+        <label for="soTietDay">Số Tiết Dạy:</label>
+        <input type="number" id="soTietDay" name="soTietDay" required>
+      </div>
+      <div>
+        <label for="soTietNghi">Số Tiết Nghỉ:</label>
+        <input type="number" id="soTietNghi" name="soTietNghi" required>
+      </div>
+      <div>
+        <label for="soTietDiMuon">Số Tiết Đi Muộn:</label>
+        <input type="number" id="soTietDiMuon" name="soTietDiMuon" required>
+      </div>
+      <div>
+        <label for="soTietTanSom">Số Tiết Tăng Sớm:</label>
+        <input type="number" id="soTietTanSom" name="soTietTanSom" required>
+      </div>
+      <div>
+        <label for="danhGia">Đánh Giá:</label>
+        <input type="text" id="danhGia" name="danhGia" required>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; gap: 10px;">
+      <button type="submit" class="save-btn">Cập Nhật</button>
+      <button type="button" onclick="closeAddForm()" class="cancel-btn">Hủy</button>
+    </div>
+  </form>
+</div>
+
+<!-- Nút Thêm Báo Cáo -->
+<div class="actions">
+  <button onclick="openAddForm()">Thêm Báo Cáo</button>
+</div>
+
+<script>
+  let reports = [];
+
+  function fetchReports() {
+    fetch("apiBaoCaoTong/baoCaoTongTheoNgayAdmin", {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    })
+            .then(response => response.json())
+            .then(data => {
+              console.log(data);
+              reports = data;
+              displayReports();
+            })
+            .catch(error => {
+              console.error("Error fetching reports:", error);
+            });
+  }
+
+  // Hiển thị báo cáo trong bảng
+  function displayReports() {
+    const tableBody = document.getElementById("report-table").getElementsByTagName("tbody")[0];
+    tableBody.innerHTML = ""; // Clear existing rows
+
+    reports.forEach((report) => {
+      const row = tableBody.insertRow();
+      row.innerHTML = `
+      <td>${report.id}</td>
+      <td>${report.maGV}</td>
+      <td>${report.thang}</td>
+      <td>${report.nam}</td>
+      <td>${report.ngay}</td>
+      <td>${report.soTietDay}</td>
+      <td>${report.soTietNghi}</td>
+      <td>${report.soTietDiMuon}</td>
+      <td>${report.soTietTanSom}</td>
+      <td>${report.danhGia}</td>
+
+      <td>
+          <button onclick="editReport(${report.id})">Sửa</button>
+          <button onclick="deleteReport(${report.id})">Xóa</button>
+      </td>`;
+    });
+  }
+  function editReport(id) {
+    // Find the report by its ID
+    const reportToEdit = reports.find(report => report.id === id);
+
+    if (reportToEdit) {
+      // Populate the form fields with the report data
+      document.getElementById("id").value = reportToEdit.id;
+      document.getElementById("maGV").value = reportToEdit.maGV;
+      document.getElementById("thang").value = reportToEdit.thang;
+      document.getElementById("nam").value = reportToEdit.nam;
+      document.getElementById("ngay").value = reportToEdit.ngay;
+      document.getElementById("soTietDay").value = reportToEdit.soTietDay;
+      document.getElementById("soTietNghi").value = reportToEdit.soTietNghi;
+      document.getElementById("soTietDiMuon").value = reportToEdit.soTietDiMuon;
+      document.getElementById("soTietTanSom").value = reportToEdit.soTietTanSom;
+      document.getElementById("danhGia").value = reportToEdit.danhGia;
+
+      // Change the form action to handle update instead of add
+      const form = document.getElementById("add-form");
+      form.setAttribute("onsubmit", `saveUpdatedReport(event, ${id})`);
+
+      // Open the form
+      openAddForm();
+    } else {
+      console.error("Report not found!");
+    }
+  }
+  function openAddForm() {
+    document.getElementById("add-report-form").style.display = "block";
+  }
+
+  function closeAddForm() {
+    document.getElementById("add-report-form").style.display = "none";
+  }
+
+  function saveNewReport() {
+    const form = document.getElementById("add-form");
+    const formData = new FormData(form);
+    const newReport = Object.fromEntries(formData.entries());
+
+    fetch("apiBaoCaoTong/themVaSua", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newReport)
+    })
+            .then(response => response.json())
+            .then(() => {
+              fetchReports(); // Refresh the reports
+              closeAddForm(); // Close the form
+            })
+            .catch(error => {
+              console.error("Error saving report:", error);
+            });
+  }
+
+  function deleteReport(id) {
+    fetch(`apiBaoCaoTong/xoaDoiTuong`, {
+      method: 'DELETE',
+      body : id
+    })
+            .then(response => response.json())
+            .then(() => {
+              fetchReports();
+            })
+            .catch(error => {
+              console.error("Error deleting report:", error);
+            });
+  }
+
+  fetchReports();
+</script>
+
+</body>
+</html>

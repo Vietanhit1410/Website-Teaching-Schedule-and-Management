@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Phân Công</title>
+    <style>
+        /* Giữ nguyên các style từ file trước */
+        body {
+            font-family: Arial, sans-serif;
+            background: #2f3b52;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ff6a00;
+        }
+
+        .assignment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .assignment-table th, .assignment-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .assignment-table th {
+            background-color: #ff6a00;
+            color: white;
+        }
+
+        .assignment-table tr:hover {
+            background-color: rgba(241, 241, 241, 0.35);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .actions button {
+            padding: 10px 20px;
+            background-color: #ff6a00;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .actions button:hover {
+            background-color: #ee0979;
+        }
+
+        .form-container {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            background-color: #2f3b52;
+            padding: 10px 30px;
+            border-radius: 8px;
+            border: 1px solid darkgrey;
+            display: none;
+            width: 50%;
+            max-width: 600px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        .form-container h2 {
+            color: #ff6a00;
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container label {
+            color: white;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-container .input-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #ff6a00;
+            border-radius: 5px;
+            background-color: #3a4a64;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-container button {
+            background-color: #ff6a00;
+            color: white;
+            font-size: 16px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 48%;
+            margin-top: 6px;
+        }
+
+        .form-container button:hover {
+            background-color: #ee0979;
+        }
+
+        .form-container .cancel-btn {
+            background-color: #555;
+        }
+
+        .form-container .save-btn {
+            background-color: #ff6a00;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Quản Lý Phân Công</h1>
+
+<!-- Bảng phân công -->
+<table class="assignment-table" id="assignment-table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Mã Giáo Viên</th>
+        <th>Tên Giáo Viên</th>
+        <th>Mã Môn</th>
+        <th>Tên Môn</th>
+        <th>Mã Lớp</th>
+        <th>Tên Lớp</th>
+        <th>Ngày</th>
+        <th>Tiết</th>
+        <th>Thứ</th>
+        <th>Hành Động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Dữ liệu phân công sẽ được thêm vào đây -->
+    </tbody>
+</table>
+
+<!-- Form Thêm Phân Công -->
+<div class="form-container" id="add-assignment-form">
+    <h2>Thêm Phân Công</h2>
+    <form id="add-form">
+        <!-- Nhập thông tin phân công -->
+        <div class="input-row">
+            <div>
+                <label for="id">ID</label>
+                <input type="text" id="id" name="id" required>
+            </div>
+            <div>
+                <label for="maGV">Mã Giáo Viên:</label>
+                <input type="text" id="maGV" name="maGV" required>
+            </div>
+            <div>
+                <label for="tenGV">Tên Giáo Viên:</label>
+                <input type="text" id="tenGV" name="tenGV" required>
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div>
+                <label for="maMon">Mã Môn:</label>
+                <input type="text" id="maMon" name="maMon" required>
+            </div>
+            <div>
+                <label for="tenMon">Tên Môn:</label>
+                <input type="text" id="tenMon" name="tenMon" required>
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div>
+                <label for="maLop">Mã Lớp:</label>
+                <input type="text" id="maLop" name="maLop" required>
+            </div>
+            <div>
+                <label for="tenLop">Tên Lớp:</label>
+                <input type="text" id="tenLop" name="tenLop" required>
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div>
+                <label for="ngay">Ngày:</label>
+                <input type="number" id="ngay" name="ngay" required>
+            </div>
+            <div>
+                <label for="tiet">Tiết:</label>
+                <input type="number" id="tiet" name="tiet" required>
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div>
+                <label for="thu">Thứ:</label>
+                <input type="number" id="thu" name="thu" required>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; gap: 10px;">
+            <button type="button" onclick="saveNewAssignment()" class="save-btn">Lưu</button>
+            <button type="button" onclick="closeAddForm()" class="cancel-btn">Hủy</button>
+        </div>
+    </form>
+</div>
+
+<!-- Nút Thêm Phân Công -->
+<div class="actions">
+    <button onclick="openAddForm()">Thêm Phân Công</button>
+</div>
+
+<script>
+    let assignments = [];
+
+    // Fetch data from the API
+    function fetchAssignments() {
+        fetch("apiTongPhanCong/layDanhSach", {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                assignments = data;
+                displayAssignments();
+            })
+            .catch(error => {
+                console.error("Error fetching assignments:", error);
+            });
+    }
+
+    // Hiển thị phân công trong bảng
+    function displayAssignments() {
+        const tableBody = document.getElementById("assignment-table").getElementsByTagName("tbody")[0];
+        tableBody.innerHTML = "";
+
+        assignments.forEach((assignment, index) => {
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+        <td>${assignment.id}</td>
+        <td>${assignment.maGiaoVien}</td>
+        <td>${assignment.tenGV}</td>
+        <td>${assignment.maMon}</td>
+        <td>${assignment.tenMon}</td>
+        <td>${assignment.maLop}</td>
+        <td>${assignment.tenLop}</td>
+        <td>${assignment.ngay}</td>
+        <td>${assignment.tiet}</td>
+        <td>${assignment.thu}</td>
+        <td>
+          <button onclick="editAssignment(${assignment.id})">Sửa</button>
+          <button onclick="deleteAssignment(${assignment.id})">Xóa</button>
+        </td>
+      `;
+        });
+    }
+
+    // Thêm phân công
+    function saveNewAssignment() {
+        const form = document.getElementById('add-form');
+        const formData = new FormData(form);
+        const assignment = {
+            id : formData.get('id'),
+            maGiaoVien: formData.get('maGV'),
+            tenGV: formData.get('tenGV'),
+            maMon: formData.get('maMon'),
+            tenMon: formData.get('tenMon'),
+            maLop: formData.get('maLop'),
+            tenLop: formData.get('tenLop'),
+            ngay: formData.get('ngay'),
+            tiet: formData.get('tiet'),
+            thu: formData.get('thu'),
+        };
+
+        fetch("apiTongPhanCong/themVaSua", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(assignment),
+        })
+            .then(response => response.json())
+            .catch(error => {
+                console.error("Error adding assignment:", error);
+            });
+    }
+
+    // Mở form thêm phân công
+    function openAddForm() {
+        document.getElementById('add-assignment-form').style.display = 'block';
+    }
+
+    // Đóng form thêm phân công
+    function closeAddForm() {
+        document.getElementById('add-assignment-form').style.display = 'none';
+    }
+
+    // Xóa phân công
+    function deleteAssignment(id) {
+        fetch(`apiTongPhanCong/xoaDoiTuong`, {
+            method: 'DELETE', // POST cho cả thêm và sửa
+            headers: { 'Content-Type': 'application/json' },
+            body: id,
+        })
+            .then(response => {
+                if (response.ok) {
+                    assignments = assignments.filter(assignment => assignment.id !== id);
+                    displayAssignments();
+                }
+            })
+            .catch(error => {
+                console.error("Error deleting assignment:", error);
+            });
+    }
+
+    // Chỉnh sửa phân công
+    // Chỉnh sửa phân công
+    function editAssignment(id) {
+        const assignment = assignments.find(assignment => assignment.id === id);
+        if (!assignment) {
+            console.error("Assignment not found!");
+            return;
+        }
+
+        // Hiển thị form với dữ liệu đã có
+        document.getElementById('id').value = assignment.id;
+        document.getElementById('maGV').value = assignment.maGiaoVien;
+        document.getElementById('tenGV').value = assignment.tenGV;
+        document.getElementById('maMon').value = assignment.maMon;
+        document.getElementById('tenMon').value = assignment.tenMon;
+        document.getElementById('maLop').value = assignment.maLop;
+        document.getElementById('tenLop').value = assignment.tenLop;
+        document.getElementById('ngay').value = assignment.ngay;
+        document.getElementById('tiet').value = assignment.tiet;
+        document.getElementById('thu').value = assignment.thu;
+
+        // Mở form
+        openAddForm();
+
+        // Cập nhật nút lưu để thực hiện chỉnh sửa
+        const saveButton = document.getElementById('save-button');
+        saveButton.onclick = function () {
+            const updatedAssignment = {
+                id: document.getElementById('id').value,
+                maGiaoVien: document.getElementById('maGV').value,
+                tenGV: document.getElementById('tenGV').value,
+                maMon: document.getElementById('maMon').value,
+                tenMon: document.getElementById('tenMon').value,
+                maLop: document.getElementById('maLop').value,
+                tenLop: document.getElementById('tenLop').value,
+                ngay: document.getElementById('ngay').value,
+                tiet: document.getElementById('tiet').value,
+                thu: document.getElementById('thu').value,
+            };
+
+            fetch("apiTongPhanCong/themVaSua", {
+                method: 'POST', // POST cho cả thêm và sửa
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedAssignment),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Failed to update assignment");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Cập nhật assignment trong danh sách
+                    const index = assignments.findIndex(a => a.id === data.id);
+                    if (index > -1) {
+                        assignments[index] = data; // Cập nhật nếu tìm thấy
+                    } else {
+                        assignments.push(data); // Thêm mới nếu không tồn tại
+                    }
+                    displayAssignments(); // Hiển thị lại danh sách
+                    closeAddForm(); // Đóng form sau khi lưu
+                })
+                .catch(error => {
+                    console.error("Error updating assignment:", error);
+                });
+        };
+    }
+
+
+    // Fetch initial data
+    fetchAssignments();
+</script>
+
+</body>
+</html>

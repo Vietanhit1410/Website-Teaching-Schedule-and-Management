@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2f3b52, #4b4f63); /* Màu gradient trầm tính */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+            animation: fadeIn 1.5s ease;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tiêu đề chào mừng */
+        .welcome-message {
+            font-size: 15px;
+            font-weight: bold;
+            color: #2f3b52; /* Màu chữ sáng */
+            margin-bottom: 30px;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            font-size: 16px;
+            transition: 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-field:focus {
+            border-color: #2f3b52; /* Xanh đậm khi focus */
+            box-shadow: 0 0 8px rgba(47, 59, 82, 0.6);
+        }
+
+        .button {
+            width: 100%;
+            padding: 15px;
+            background-color: #2f3b52; /* Xanh đậm */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .button:hover {
+            background-color: #4b4f63; /* Xám khi hover */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .forgot-password {
+            color: #2f3b52;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 20px;
+            display: inline-block;
+            transition: 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #4b4f63;
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <!-- Thêm thông báo chào mừng -->
+    <div class="welcome-message">
+        Cổng Thông Tin Giáo Viên
+    </div>
+
+    <h2>Đăng Nhập</h2>
+    <input type="text" id="tenDangNhap" class="input-field" placeholder="Tài Khoản" />
+    <input type="password" id="matKhau" class="input-field" placeholder="Mật Khẩu" />
+    <button class="button" onclick="dangNhap()">Đăng Nhập</button>
+    <a href="#" class="forgot-password">Quên mật khẩu?</a>
+    <div id="error-message" class="error-message"></div>
+</div>
+
+<script>
+    const apiUrl = '/apiTaiKhoan/kiemTraTaiKhoan';
+
+    // Hàm đăng nhập
+    function dangNhap() {
+        const tenDangNhap = document.getElementById('tenDangNhap').value.trim();
+        const matKhau = document.getElementById('matKhau').value.trim();
+        console.log(matKhau,tenDangNhap)
+        // Kiểm tra xem người dùng đã nhập đầy đủ thông tin chưa
+        if (!tenDangNhap || !matKhau) {
+            document.getElementById('error-message').textContent = "Vui lòng nhập tài khoản và mật khẩu!";
+            return;
+        }
+
+        const taiKhoanObj = { tenDangNhap, matKhau };
+
+
+        // Gửi yêu cầu đến API kiểm tra tài khoản
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(taiKhoanObj),
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Tài khoản hoặc mật khẩu không đúng!");
+                }
+            })
+            .then(data => {
+                if (data) {
+                    localStorage.setItem('taiKhoan', JSON.stringify(data));
+                    const data1 = JSON.parse(localStorage.getItem('taiKhoan'));
+                    if(data1.quyenHan === "ROLE_USER"){
+                        window.location.href = 'TrangChu_User.html';
+                    }else window.location.href = 'TrangChu_Admin.html';
+
+                } else {
+                    document.getElementById('error-message').textContent = "Tài khoản hoặc mật khẩu không đúng!";
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('error-message').textContent = "Đã có lỗi xảy ra! Vui lòng thử lại.";
+            });
+    }
+
+
+</script>
+</body>
+</html>

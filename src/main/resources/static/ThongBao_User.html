@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Báo</title>
+    <style>
+        /* Reset mặc định */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2f3b52, #4b4f63); /* Màu nền giống trang chủ */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Thay đổi để sắp xếp phần tử từ trên xuống */
+            height: 100vh;
+            padding: 20px;
+            overflow: auto; /* Để có thể cuộn nếu nội dung dài */
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .notification-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center; /* Căn giữa các thông báo */
+        }
+
+        .notification {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            color: #fff;
+            transition: transform 0.3s ease;
+            width: 100%; /* Đảm bảo mỗi thông báo chiếm hết chiều rộng của container */
+            cursor: pointer; /* Con trỏ thay đổi khi hover vào thông báo */
+        }
+
+        .notification:hover {
+            transform: scale(1.05);
+        }
+
+        .notification h3 {
+            margin-bottom: 10px;
+            font-size: 20px;
+            color: #ff6a00; /* Màu cho tiêu đề */
+        }
+
+        .notification p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .read-more {
+            color: #ff6a00;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .full-content {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Thông Báo</h1>
+<div class="notification-container" id="notification-container">
+    <!-- Các thông báo sẽ được thêm vào đây -->
+</div>
+
+<script>
+    fetchAll()
+
+    function fetchAll(){
+        const maGV = JSON.parse(localStorage.getItem('taiKhoan')).tenDangNhap;
+        console.log(maGV);
+
+        if (maGV) {
+            // Gửi yêu cầu API để lấy thông báo
+            fetch('apiThongBao/getInfoByMaGV', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: maGV,  // Gửi mã giáo viên
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Không thể lấy dữ liệu thông báo.');
+                    }
+                    return response.json(); // Giả sử API trả về danh sách các thông báo
+                })
+                .then(thongBaoList => {
+                    const container = document.getElementById('notification-container');
+                    if (thongBaoList.length === 0) {
+                        container.innerHTML = '<p>Không có thông báo nào.</p>';
+                    } else {
+                        thongBaoList.forEach(thongBao => {
+                            const notificationDiv = document.createElement('div');
+                            notificationDiv.classList.add('notification');
+
+                            const title = document.createElement('h3');
+                            title.textContent = thongBao.title; // Giả sử thông báo có trường title
+                            notificationDiv.appendChild(title);
+
+                            const content = document.createElement('p');
+                            const truncatedContent = thongBao.content.length > 100 ? thongBao.content.substring(0, 100) + '...' : thongBao.content;
+                            content.textContent = truncatedContent; // Hiển thị nội dung bị cắt ngắn nếu dài hơn 100 ký tự
+                            notificationDiv.appendChild(content);
+
+                            const readMore = document.createElement('span');
+                            readMore.textContent = 'Xem thêm';
+                            readMore.classList.add('read-more');
+                            notificationDiv.appendChild(readMore);
+
+                            // Tạo phần nội dung đầy đủ
+                            const fullContent = document.createElement('p');
+                            fullContent.textContent = thongBao.content;
+                            fullContent.classList.add('full-content');
+                            notificationDiv.appendChild(fullContent);
+
+                            // Thêm sự kiện click để hiển thị nội dung đầy đủ
+                            readMore.addEventListener('click', function() {
+                                fullContent.style.display = fullContent.style.display === 'none' ? 'block' : 'none';
+                            });
+
+                            container.appendChild(notificationDiv);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        } else {
+            document.getElementById('notification-container').innerHTML = '<p>Vui lòng đăng nhập để xem thông báo.</p>';
+        }
+    }
+</script>
+
+</body>
+</html>

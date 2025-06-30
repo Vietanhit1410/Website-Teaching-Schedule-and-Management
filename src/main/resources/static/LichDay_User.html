@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Dạy</title>
+    <style>
+        /* Reset mặc định */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100%; /* Đảm bảo body và html chiếm toàn bộ chiều cao */
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2f3b52, #4b4f63);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Bảng Lịch Dạy */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .schedule-table th, .schedule-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #fff;
+        }
+
+        .schedule-table th {
+            background-color: #2f3b52;
+            color: #ff6a00;
+        }
+
+        .schedule-table td {
+            color: white;
+        }
+
+        /* Tiêu đề */
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            color: #ff6a00;
+        }
+        .attendance-section {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .attendance-section input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ff6a00;
+            background-color: transparent;
+            color: white;
+            width: 250px;
+        }
+
+        .attendance-section button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff6a00;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .attendance-section button:hover {
+            background-color: #ff4500;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Lịch Dạy</h1>
+
+<!-- Bảng lịch dạy -->
+<table class="schedule-table" id="schedule-table">
+    <thead>
+    <tr>
+        <th>Ngày</th>
+        <th>Thứ</th>
+        <th>Tiết</th>
+        <th>Tên Lớp</th>
+        <th>Tên Môn</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Các dòng dữ liệu lịch dạy sẽ được thêm vào ở đây -->
+    </tbody>
+</table>
+<div class="attendance-section">
+    <input type="text" id="className" placeholder="Nhập tên lớp" />
+    <button id="attendanceButton" onclick="diemDanh()">Điểm Danh</button>
+</div>
+
+<script>
+
+    setTimeout(function() {
+        fetchScheduleData();
+    }, 1200);
+
+    function diemDanh() {
+        const apiUrl = "apiChamCong/chamCong";
+        const tenLop = document.getElementById('className').value.trim();
+
+        if (!tenLop) {
+            alert("Phải nhập tên lớp");
+            return;
+        }
+
+        const dataGVV = JSON.parse(localStorage.getItem('taiKhoan'));
+        const taiKhoan1 = {
+            tenDangNhap: dataGVV.tenDangNhap, // Thay thế với dữ liệu thực tế
+            matKhau: dataGVV.matKhau  // Thay thế với dữ liệu thực tế
+        };
+
+        const requestBody = {
+            taiKhoan1: taiKhoan1,
+            lopHoc: tenLop
+        };
+
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Không tìm thấy thông tin giáo viên hoặc không thể điểm danh");
+                }
+                return response.text();  // expecting a string message from the backend
+            })
+            .then(data => {
+                if (data) {
+                    alert("Thông báo: " + data);  // Show the response message
+                } else {
+                    console.error("Dữ liệu không hợp lệ.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Đã có lỗi xảy ra. Vui lòng thử lại.");
+            });
+    }
+
+
+
+    function fetchScheduleData() {
+        // Lấy thông tin giáo viên từ localStorage
+        const infoGV = JSON.parse(localStorage.getItem('giaoVien'));
+
+        // Kiểm tra xem thông tin giáo viên có tồn tại không
+        if (!infoGV || !infoGV.maGV) {
+            console.log("Không tìm thấy thông tin giáo viên trong localStorage.");
+            return;
+        }
+
+        const maGV = infoGV.maGV;
+
+        const apiUrl = '/apiLichDay/layLichDayTuan';
+
+
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body:  maGV
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Không tìm thấy lịch dạy");
+                }
+            })
+            .then(data => {
+                if (data && Array.isArray(data)) {
+                    const tableBody = document.querySelector('#schedule-table tbody');
+                    tableBody.innerHTML = '';  // Xóa nội dung cũ trước khi thêm mới
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                    <td>${item.ngay}</td>
+                    <td>${item.thu}</td>
+                    <td>${item.tiet}</td>
+                    <td>${item.tenLop}</td>
+                    <td>${item.tenMon}</td>
+                `;
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    console.log("Dữ liệu lịch dạy không hợp lệ hoặc không có dữ liệu.");
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi gọi API:', error);
+            });
+    }
+
+
+    // Gọi hàm khi trang được tải
+
+
+</script>
+
+</body>
+</html>
